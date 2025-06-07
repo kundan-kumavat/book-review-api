@@ -28,25 +28,28 @@ A RESTful API built with Node.js, Express.js, and MongoDB that allows users to r
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/your-username/book-review-api.git
+   git clone https://github.com/kundan-kumavat/book-review-api.git
    cd book-review-api
    ```
 
 2. **Install dependencies**
    ```bash
-   npm install
+   npm install express cors dotenv bcrypt mongoose jsonwebtoken nodemon
    ```
 
 3. **Create a `.env` file**
    ```
-   PORT=5000
-   MONGO_URI=mongodb://localhost:27017/book_review
-   JWT_SECRET=your_secret_key
+   CORS_ORIGIN=*
+   MONGO_URI= your-mongodb-url
+   ACCESS_TOKEN_SECRET= your-access-token-secret
+   ACCESS_TOKEN_EXPIRY= 1d
+   REFRESH_TOKEN_SECRET = your-refresh-token-secret
+   REFRESH_TOKEN_EXPIRY= 10d
    ```
 
 4. **Start the server**
    ```bash
-   node app.js
+    npm start
    ```
    The server will run on `http://localhost:5000`
 
@@ -82,7 +85,8 @@ Logs in a user.
 **Response:**
 ```json
 {
-  "token": "JWT_TOKEN"
+  "accessToken": "JWT_ACCESS_TOKEN",
+  "refreshToken": "JWT_REFRESH_TOKEN"
 }
 ```
 
@@ -95,7 +99,7 @@ Adds a new book.
 
 **Headers:**
 ```
-Authorization: Bearer <JWT_TOKEN>
+Authorization: Bearer <JWT_ACCESS_TOKEN>
 ```
 
 **Request Body:**
@@ -131,7 +135,7 @@ Adds a review for a book (only one per user per book).
 
 **Headers:**
 ```
-Authorization: Bearer <JWT_TOKEN>
+Authorization: Bearer <JWT_ACCESS_TOKEN>
 ```
 
 **Request Body:**
@@ -147,7 +151,7 @@ Updates a review.
 
 **Headers:**
 ```
-Authorization: Bearer <JWT_TOKEN>
+Authorization: Bearer <JWT_ACCESS_TOKEN>
 ```
 
 **Request Body:**
@@ -163,7 +167,7 @@ Deletes a review.
 
 **Headers:**
 ```
-Authorization: Bearer <JWT_TOKEN>
+Authorization: Bearer <JWT_ACCESS_TOKEN>
 ```
 
 ---
