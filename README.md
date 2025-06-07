@@ -51,7 +51,7 @@ A RESTful API built with Node.js, Express.js, and MongoDB that allows users to r
    ```bash
     npm start
    ```
-   The server will run on `http://localhost:5000`
+   The server will run on `http://localhost:3000`
 
 ---
 

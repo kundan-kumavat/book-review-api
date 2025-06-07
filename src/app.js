@@ -21,19 +21,19 @@ app.use(express.urlencoded({
 
 // User Routes
 const userRouter = require('./routes/user.route.js');
-app.use('/api/v1/users', userRouter);
+app.use('/', userRouter);
 
 // Book Routes
 const bookRouter = require('./routes/book.route.js');
-app.use('/api/v1/books', bookRouter);
+app.use('/books', bookRouter);
 
 // Reviews Routes
 const reviewRouter = require('./routes/review.route.js');
-app.use('/api/v1/reviews', reviewRouter);
+app.use('/reviews', reviewRouter);
 
 
 // Search Route - search books based on author and genre
-app.get('/api/v1/search', async (req, res) => {
+app.get('/search', async (req, res) => {
     const query = req.query.query || '';
 
     try {
