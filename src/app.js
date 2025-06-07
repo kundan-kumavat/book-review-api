@@ -34,7 +34,7 @@ app.use('/api/v1/reviews', reviewRouter);
 
 // Search Route - search books based on author and genre
 app.get('/api/v1/search', async (req, res) => {
-    const query = req.params.query || '';
+    const query = req.query.query || '';
 
     try {
         const books = await Book.find({

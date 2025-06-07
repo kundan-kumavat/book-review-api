@@ -2,6 +2,7 @@ const User = require('../models/user.model.js');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
+// Function to generate Access and Refresh Token
 const generateAccessAndRefreshToken = async(userId) => {
     try{
         const user = await User.findById(userId);
@@ -21,6 +22,7 @@ const generateAccessAndRefreshToken = async(userId) => {
     }
 }
 
+// Register user to the database
 const registerUser = async(req, res) => {
     const {email,username, password} = req.body;
 
@@ -28,11 +30,17 @@ const registerUser = async(req, res) => {
         [email, username, password].some((field) => field?.trim() === "")
     ){
         return res.status(400).json({
-            message: "Email or password is required",
+            message: "Fields cannot be empty",
         })
     }
 
+    if (!username || !email || !password) {
+        return res.status(400).json({ message: 'Username, email, and password are required' });
+    }
+
     try {
+
+        // Check if user already exits
         const existingUser = await User.findOne({
             $or: [{email}, {username}]
         });
@@ -43,8 +51,10 @@ const registerUser = async(req, res) => {
             })
         }
 
+        // Hashing the password using bcyrpt library
         const hashedPassword = await bcrypt.hash(password, 10);
 
+        // Create Database user
         const user = await User.create({
             email: email,
             username: username,
@@ -74,6 +84,7 @@ const registerUser = async(req, res) => {
     }
 };
 
+// Login function
 const loginUser = async(req, res) => {
     const {email, username, password} = req.body;
 
@@ -84,6 +95,8 @@ const loginUser = async(req, res) => {
     }
 
     try {
+
+        // Searching for user
         const user = await User.findOne({
             $or: [{username}, {email}]
         });
@@ -94,6 +107,7 @@ const loginUser = async(req, res) => {
             })
         }
 
+        // Checking if the password entered by user is correct
         const isPasswordCorrect = await bcrypt.compare(password, user.password);
 
         if(!isPasswordCorrect){
@@ -102,6 +116,7 @@ const loginUser = async(req, res) => {
             })
         };
 
+        // Generate Access and Refresh Token
         const {accessToken, refreshToken} = await generateAccessAndRefreshToken(user?._id);
 
         const loggedInUser = await User.findById(user?._id).select("-password -refreshToken");
@@ -121,7 +136,9 @@ const loginUser = async(req, res) => {
     }
 }
 
+// If Access Token is expired user can generate new access token using its refresh token
 const refreshAccessToken = async(req, res) => {
+    // pass the token in body
     const incomingRefreshToken = req.body.refreshToken;
 
     if(!incomingRefreshToken){
@@ -131,8 +148,10 @@ const refreshAccessToken = async(req, res) => {
     }
 
     try {
+        // Decode the refresh token
         const decodedToken = jwt.verify(incomingRefreshToken, process.env.REFRESH_TOKEN_SECRET);
 
+        // Check if the refresh token is valid
         const user = await User.findById(decodedToken?._id);
 
         if(!user){
@@ -141,12 +160,14 @@ const refreshAccessToken = async(req, res) => {
             })
         }
 
+        // Check if refresh token has expired
         if(incomingRefreshToken !== user?.refreshToken){
             return res.status(401).json({
                 message: "Refresh token is expired"
             })
         }
 
+        // Regenerate Access and Refresh Token
         const {accessToken, refreshToken} = await generateAccessAndRefreshToken(user._id);
 
         return res.status(200).json({
